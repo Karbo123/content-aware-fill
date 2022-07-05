@@ -1,5 +1,5 @@
 .POSIX:
-CC        = g++ -std=c99
+CC        = c++ -std=c++11
 CPPFLAGS  = -MMD -MP -DSYNTH_LIB_ALONE
 CFLAGS    = -Wall -Wextra -pedantic -O3 -fpermissive
 LDFLAGS   = -lm
@@ -56,6 +56,16 @@ $(EXAMPLE_DIR)/painter: $(EXAMPLE_DIR)/painter.c $(STATIC_LIB)
 	@echo "\033[1;92mBuilding $@\033[0m"
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $(EXAMPLE_DIR)/painter.c $(LDFLAGS) $(INC_FLAGS) $(STATIC_LIB) $(shell pkg-config --cflags --libs sdl2)
+
+# Build lib for python's numpy using pybind11
+libcwf: python/content-aware-fill.cpp $(SRCS)
+	@echo "\033[1;92mBuilding $@\033[0m"
+	$(CC) -O3 -Wall -shared -fPIC \
+	python/content-aware-fill.cpp -o python/libcwf$(shell python3-config --extension-suffix) \
+	$(shell python3 -m pybind11 --includes) \
+	$(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(INC_FLAGS) $(SRCS)
+	@echo "\033[1;92mLib is saved to:\033[0m \033[1;36mpython/libcwf$(shell python3-config --extension-suffix)\033[0m"
+	@echo "\033[1;92mDone!\033[0m"
 
 # Run the executable(ppm) against the sample images with varying parameters.
 fuzz: $(EXAMPLE_DIR)/ppm
