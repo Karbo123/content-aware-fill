@@ -58,14 +58,21 @@ $(EXAMPLE_DIR)/painter: $(EXAMPLE_DIR)/painter.c $(STATIC_LIB)
 	$(CC) $(CFLAGS) -o $@ $(EXAMPLE_DIR)/painter.c $(LDFLAGS) $(INC_FLAGS) $(STATIC_LIB) $(shell pkg-config --cflags --libs sdl2)
 
 # Build lib for python's numpy using pybind11
-libcwf: python/content-aware-fill.cpp $(SRCS)
+content-aware-fill: python/content-aware-fill.cpp $(SRCS)
 	@echo "\033[1;92mBuilding $@\033[0m"
 	$(CC) -O3 -Wall -shared -fPIC \
-	python/content-aware-fill.cpp -o python/libcwf$(shell python3-config --extension-suffix) \
+	python/content-aware-fill.cpp -o python/libcontent_aware_fill$(shell python3-config --extension-suffix) \
+	-DPYTHON_LIB_NAME=libcontent_aware_fill \
 	$(shell python3 -m pybind11 --includes) \
 	$(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(INC_FLAGS) $(SRCS)
-	@echo "\033[1;92mLib is saved to:\033[0m \033[1;36mpython/libcwf$(shell python3-config --extension-suffix)\033[0m"
+	@echo "\033[1;92mLib is saved to:\033[0m \033[1;36mpython/libcontent_aware_fill$(shell python3-config --extension-suffix)\033[0m"
 	@echo "\033[1;92mDone!\033[0m"
+
+SITE_PKG_DIR = $(shell python3 -c "import site; print(site.getsitepackages()[0])")
+install-content-aware-fill: content-aware-fill
+	@echo "\033[1;92mInstalling $@\033[0m"
+	cp python/libcontent_aware_fill*.so $(SITE_PKG_DIR)
+	@echo "\033[1;92mInstalled to $(shell ls $(SITE_PKG_DIR)/libcontent_aware_fill*.so) \033[0m"
 
 # Run the executable(ppm) against the sample images with varying parameters.
 fuzz: $(EXAMPLE_DIR)/ppm
