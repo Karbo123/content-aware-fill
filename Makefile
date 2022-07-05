@@ -1,7 +1,7 @@
 .POSIX:
-CC        = clang -std=c99
+CC        = g++ -std=c99
 CPPFLAGS  = -MMD -MP -DSYNTH_LIB_ALONE
-CFLAGS    = -Wall -Wextra -pedantic -O3
+CFLAGS    = -Wall -Wextra -pedantic -O3 -fpermissive
 LDFLAGS   = -lm
 LDLIBS    = 
 # PREFIX = /usr/local

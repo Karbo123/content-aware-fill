@@ -2,3 +2,5 @@
 **/build
 **/lib
 **/output
+examples/hello
+examples/ppm
